@@ -13,8 +13,8 @@
 Go to `infura.io`, sign up and retreive you free API key.
 
 Clone the repo
-* `git clone https://github.com/mavileo/Arb_bot`
-* `cd Arb_bot`
+* `git clone https://github.com/mavileo/Arbitrage_bot`
+* `cd Arbitrage_bot`
 
 Create a `.env' file and add your API key in it
 * `echo "INFURA_KEY=your_key" > .env`
