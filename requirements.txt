@@ -1,0 +1,5 @@
+web3
+requests
+python-coinmarketcap
+prettyprint
+python-dotenv

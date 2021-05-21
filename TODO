@@ -1,0 +1,16 @@
+TODO
+
+Données :
+Scrapping etherscan top erc20 tokens
+Scrapping shitcoins sur les subreddit de pump and dump
+Scrapping groupes telegram de pump and dump
+
+Algo :
+Calculer montant opti (voir example uniswap)
+Ajouter frais de gaz
+
+Smart contracts :
+Synchroniser notre propre noeud pour pas etre dependant de Infura
+Obfuscer transactions (appeler les fonctions le plus pres possible du noyeau)
+Require owner address et set on dans smart contract (https://medium.com/@danrobinson/ethereum-is-a-dark-forest-ecc5f0505dff)
+LE MIEUX : posseder un noeud mineur -> permets d'inclure la transac direct ds le bloc ss passer par la mempool
