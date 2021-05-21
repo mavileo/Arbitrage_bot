@@ -19,8 +19,10 @@ Clone the repo
 Create a `.env' file and add your API key in it
 * `echo "INFURA_KEY=your_key" > .env`
 
+Install dependancies
+* `pip install -r requirements.txt`
+
 Run the bot
-* `source env/bin/activate`
 * `python bot.py`
 
 Fot the moment, the bot will only show you pairs it search arbitrage on and tells you when a profitable arbitrage is found.
