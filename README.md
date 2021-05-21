@@ -10,9 +10,16 @@
 
 ## Usage
 
+Go to `infura.io`, sign up and retreive you free API key.
+
+Clone the repo
 * `git clone https://github.com/mavileo/Arb_bot`
 * `cd Arb_bot`
-* `pip install -r requirements.txt`
+
+Create a `.env' file and add your API key in it
+* `echo "INFURA_KEY=your_key" > .env`
+
+Run the bot
 * `source env/bin/activate`
 * `python bot.py`
 
