@@ -11,13 +11,15 @@
 ## Usage
 
 Go to `infura.io`, sign up and retreive you free API key.
+Go to `etherscan.io`, sign up and retreive you free API key.
 
 Clone the repo
 * `git clone https://github.com/mavileo/Arbitrage_bot`
 * `cd Arbitrage_bot`
 
-Create a `.env' file and add your API key in it
-* `echo "INFURA_KEY=your_key" > .env`
+Create a `.env' file and add your API keys in it
+* `echo "INFURA_KEY=your_infura_key" > .env`
+* `echo "ETHERSCAN_KEY=your_etherscan_key" >> .env`
 
 Install dependancies
 * `pip install -r requirements.txt`
