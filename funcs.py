@@ -2,7 +2,7 @@ from consts import *
 
 # GET THE ABI OF THE CONTRACT PASSED IN ARGS FROM ETHERSCAN
 def getAbi(address):
-    requestAbi = "https://api.etherscan.io/api?module=contract&action=getabi&address={}&apikey=EWAWKJG96Y9NWG2G5BPHSF5QWI1A3B42R1".format(address)
+    requestAbi = "https://api.etherscan.io/api?module=contract&action=getabi&address={}&apikey={}".format(address, ETHERSCAN_KEY)
     r = requests.get(requestAbi)
     data = r.json()
     return data['result']

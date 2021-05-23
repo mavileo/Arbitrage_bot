@@ -10,6 +10,7 @@ AMOUNT_PER_TRADE = 1000
 load_dotenv()
 
 INFURA_KEY = os.getenv('INFURA_KEY')
+ETHERSCAN_KEY = os.getenv('ETHERSCAN_KEY')
 
 # Create PrettyPrint obj
 pp = pprint.PrettyPrinter(indent=4)
@@ -69,8 +70,8 @@ top10ERC = [{'address':Web3.toChecksumAddress('0xB8c77482e45F1F44dE1745F52C74426
             'symbol':'HEX'},
             {'address':Web3.toChecksumAddress('0x3883f5e181fccaf8410fa61e12b59bad963fb645'),
             'symbol':'THETA'},
-            {'address':Web3.toChecksumAddress('0x75231f58b43240c9718dd58b4967c5114342a86c'),
-            'symbol':'OKB'},
+            {'address':Web3.toChecksumAddress('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'),
+            'symbol':'WETH'},
             {'address':Web3.toChecksumAddress('0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'),
             'symbol':'WBTC'}]
 
