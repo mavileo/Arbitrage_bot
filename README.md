@@ -1,29 +1,24 @@
-# Arbitrage bot (smart contracts version)
+# Arbitrage bot (1inch API version)
 
 /!\ Project under developpement, not ready for production
 
 ## Features
 
 * Get an ERC-20 top tokens list ✅
-* Compare prices of pairs between different DEXs through their smart contracts* ✅
+* Compare prices of pairs between different DEXs through 1inch API ✅
 * Call the flash loan and swap smart contract when an opportunitie is found ❌
-
-*An other implementation is tested in the API version (on `api` branch) on which prices aren't retreive from DEXs's smart contracts but from 1inch API using multithreading.
 
 ## Usage
 
-Go to `infura.io` and `etherscan.io`, sign up and retreive you free API keys.
-
 Clone the repo
-* `git clone https://github.com/mavileo/Arbitrage_bot`
+* `git clone https://github.com/mavileo/Arbitrage_bot -b api`
 * `cd Arbitrage_bot`
-
-Create a `.env' file and add your API keys in it
-* `echo "INFURA_KEY=your_infura_key" > .env`
-* `echo "ETHERSCAN_KEY=your_etherscan_key" >> .env`
 
 Install dependancies
 * `pip install -r requirements.txt`
+
+Set the number of threads you want in the `THREADS` variable in `consts.py` file
+* default : `THREADS = 10`
 
 Run the bot
 * `python bot.py`

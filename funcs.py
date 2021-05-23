@@ -7,48 +7,19 @@ def getAbi(address):
     data = r.json()
     return data['result']
 
-# montant return != montant uniswap mais coherent (monte qd rate pair monte), formule trouvee ici : https://ethereum.stackexchange.com/questions/91441/how-can-you-get-the-price-of-token-on-uniswap-using-solidity
-def getSwapRate(pair, amountIn, pairDecimals):
-    res = pair.functions.getReserves().call()
-    res[0] = res[0] * (pow(10, pairDecimals))
-    return (amountIn * res[0]) / res[1]
-
-# RETURN THE VALUE OF N TOKENS IN USD
-def getBenef(token, amount):
-    usdtPath = [token, usdtAddress]
-    usdcPath = [token, usdcAddress]
-    daiPath = [token, daiAddress]
-    try:
-        benef = sushiRouter02.functions.getAmountsOut(amount, usdtPath).call()
-    except:
-        try:
-            benef = sushiRouter02.functions.getAmountsOut(amount, usdcPath).call()
-        except:
-            try:
-                benef = sushiRouter02.functions.getAmountsOut(amount, daiPath).call()
-            except:
-                benef = [-1, -1]
-    return benef[1]
-
-# GET A STABLECOIN AVAILABLE AS UNISWAP PAIR BETWEEN IT AND THE TOKEN PASSED
-def getStablePair(token):
-    pairAddress = uniFactory.functions.getPair(token, usdtAddress).call()
-    if (pairAddress != '0x0000000000000000000000000000000000000000'):
-        return usdtAddress
-    pairAddress = uniFactory.functions.getPair(token, usdcAddress).call()
-    if (pairAddress != '0x0000000000000000000000000000000000000000'):
-        return usdcAddress
-    pairAddress = uniFactory.functions.getPair(token, daiAddress).call()
-    if (pairAddress != '0x0000000000000000000000000000000000000000'):
-        return daiAddress
-    return '0x0000000000000000000000000000000000000000'
-
-# RETURN 0x0 IF THE TOKEN WAS ALREADY TESTED
-def checkToken(token, tokensTested):
-    for i in tokensTested:
-        if (i == token):
-            return '0x0000000000000000000000000000000000000000'
-    return token
+def getBenef(amounts):
+    lower = 99999999999999
+    higher = -1
+    lower_dex = ''
+    higher_dex = ''
+    for a in amounts:
+        if (a['amount'] < lower and a['amount'] != 0):
+            lower = a['amount']
+            lower_dex = a['protocol']
+        if (a['amount'] > higher and a['amount'] != 0):
+            higher = a['amount']
+            higher_dex = a['protocol']
+    return (higher, lower, lower_dex, higher_dex)
 
 def checksumAddress(tokenList):
     for i in tokenList:
@@ -80,3 +51,65 @@ def checkAmountsList(amounts):
         if (i != -1):
             valids += 1
     return 0 if valids < 2 else 1
+
+def isProtocolNew(amounts, protocol):
+    for a in amounts:
+        if (a['protocol'] == protocol):
+            return False
+    return True
+
+# RETURN N AMOUNT OF TOKEN CORRESPONDING TO THE "AMOUNT_PER_TRADE" VALUE IN USD
+def tokenAmount1inch(token0):
+    parameters = {
+    'fromTokenAddress':usdtAddress,
+    'toTokenAddress':token0,
+    'amount':AMOUNT_PER_TRADE
+    }
+    response = session.get(inchQuoteUrl, params=parameters)
+    return int((json.loads(response.text))['toTokenAmount']) / 1000000000000
+
+def tokenToUsd(token, amount):
+    parameters = {
+    'fromTokenAddress':token,
+    'toTokenAddress':usdtAddress,
+    'amount':amount
+    }
+    response = session.get(inchQuoteUrl, params=parameters)
+    inch = json.loads(response.text)
+    try:
+        return int(inch['toTokenAmount']) / pow(10, inch['fromToken']['decimals'] - inch['toToken']['decimals'])
+    except:
+        print('FAIL TO GET THE USD PRICE')
+        return -1
+
+# Get the amount from token0 to token1 from 1inch Quote API
+threadLockPrint = threading.Lock()
+threadLock = threading.Lock()
+def getAmount(token0, token1, amount, protocol, amounts):
+    parameters = {
+    'fromTokenAddress':token0,
+    'toTokenAddress':token1,
+    'amount':amount,
+    'protocol':protocol
+    }
+    response = session.get(inchQuoteUrl, params=parameters)
+    inch = json.loads(response.text)
+    retAmount = float(inch['toTokenAmount']) / pow(10, inch['fromToken']['decimals'] - inch['toToken']['decimals'])
+    threadLockPrint.acquire()
+    print('{} protocol : {}'.format(protocol, retAmount))
+    threadLockPrint.release()
+    if (inch['protocols'] != [] and retAmount != 0):
+        threadLock.acquire()
+        amounts.append({'protocol': protocol, 'amount': retAmount})
+        threadLock.release()
+
+class amountThread (threading.Thread):
+   def __init__(self, token0, token1, amount, protocol, amounts):
+      threading.Thread.__init__(self)
+      self.token0 = token0
+      self.token1 = token1
+      self.amount = amount
+      self.protocol = protocol
+      self.amounts = amounts
+   def run(self):
+      getAmount(self.token0, self.token1, self.amount, self.protocol, self.amounts)

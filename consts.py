@@ -1,4 +1,4 @@
-import requests, json, pprint, math, os
+import requests, json, pprint, math, os, time, threading
 from web3 import Web3
 from requests import Request, Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
@@ -7,10 +7,7 @@ from dotenv import load_dotenv
 
 AMOUNT_PER_TRADE = 1000
 
-load_dotenv()
-
-INFURA_KEY = os.getenv('INFURA_KEY')
-ETHERSCAN_KEY = os.getenv('ETHERSCAN_KEY')
+THREADS = 10
 
 # Create PrettyPrint obj
 pp = pprint.PrettyPrinter(indent=4)
@@ -20,8 +17,6 @@ session = Session()
 
 # 1inch Quote API URL
 inchQuoteUrl = 'https://api.1inch.exchange/v3.0/1/quote'
-
-INFURA_URL = "https://mainnet.infura.io/v3/{}".format(INFURA_KEY)
 
 dexList = ['Uniswap', 'Sushiswap', 'Bancor']
 
@@ -74,27 +69,4 @@ top10ERC = [{'address':Web3.toChecksumAddress('0xB8c77482e45F1F44dE1745F52C74426
             'symbol':'WETH'},
             {'address':Web3.toChecksumAddress('0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'),
             'symbol':'WBTC'}]
-
-# GET IUniswapV2Factory ABI
-rFactory = requests.get("https://unpkg.com/@uniswap/v2-core@1.0.0/build/IUniswapV2Factory.json")
-tmp = rFactory.json()
-uniFactoryAbi = tmp['abi']
-
-# GET IUniswapV2Pair ABI
-rPair = requests.get("https://unpkg.com/@uniswap/v2-core@1.0.0/build/IUniswapV2Pair.json")
-tmp = rPair.json()
-uniPairAbi = tmp['abi']
-
-# GET IUniswapV2Router02 ABI
-rRouter02 = requests.get("https://unpkg.com/@uniswap/v2-periphery@1.1.0-beta.0/build/IUniswapV2Router02.json")
-tmp = rRouter02.json()
-uniRouter02Abi = tmp['abi']
-
-# GET Bancor ContractRegistry ABI
-rContractRegistry = requests.get("https://raw.githubusercontent.com/bancorprotocol/docs/master/ethereum-contracts/build/ContractRegistry.abi")
-bancorContractRegistryABI = rContractRegistry.json()
-
-# GET Bancor Network ABI
-rNetwork = requests.get("https://raw.githubusercontent.com/bancorprotocol/docs/master/ethereum-contracts/build/BancorNetwork.abi")
-bancorNetworkABI = rNetwork.json()
 
