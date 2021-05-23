@@ -66,7 +66,11 @@ def tokenAmount1inch(token0):
     'amount':AMOUNT_PER_TRADE
     }
     response = session.get(inchQuoteUrl, params=parameters)
-    return int((json.loads(response.text))['toTokenAmount']) / 1000000000000
+    inch = json.loads(response.text)
+    amount = float(inch['toTokenAmount']) / pow(10, inch['toToken']['decimals'] - inch['fromToken']['decimals'])
+    if (amount > 0 and amount < 1):
+        return 1
+    return amount
 
 def tokenToUsd(token, amount):
     parameters = {
@@ -94,14 +98,25 @@ def getAmount(token0, token1, amount, protocol, amounts):
     }
     response = session.get(inchQuoteUrl, params=parameters)
     inch = json.loads(response.text)
-    retAmount = float(inch['toTokenAmount']) / pow(10, inch['fromToken']['decimals'] - inch['toToken']['decimals'])
+    #pp.pprint(inch)
+    try:
+        retAmount = float(inch['toTokenAmount']) / pow(10, inch['toToken']['decimals'] - inch['fromToken']['decimals'])
+    except:
+        return -1
     threadLockPrint.acquire()
     print('{} protocol : {}'.format(protocol, retAmount))
     threadLockPrint.release()
-    if (inch['protocols'] != [] and retAmount != 0):
-        threadLock.acquire()
-        amounts.append({'protocol': protocol, 'amount': retAmount})
-        threadLock.release()
+    
+    if (inch['protocols'] == [] or retAmount == 0):
+        return -1
+    # incoherents results when CURVE protocol is present, idk why for the moment so skip if it is present
+    for l in inch['protocols'][0]:
+        for p in l:
+            if (p['name'] == 'CURVE'):
+                return -1
+    threadLock.acquire()
+    amounts.append({'protocol': protocol, 'amount': retAmount})
+    threadLock.release()
 
 class amountThread (threading.Thread):
    def __init__(self, token0, token1, amount, protocol, amounts):

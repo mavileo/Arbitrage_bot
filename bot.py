@@ -18,7 +18,7 @@ threads = []
 for token0 in tokenList:
     token0Amount = int(tokenAmount1inch(token0['address']))
     if (token0Amount == 0):
-        token0Amount = 1
+        token0Amount = AMOUNT_PER_TRADE
     for token1 in tokenList:
 
         if (token0 == token1):
@@ -26,6 +26,7 @@ for token0 in tokenList:
 
         print('\n------------------------------------------\n')
         print('Search arbitrage on {}/{} pair\n'.format(token0['symbol'], token1['symbol']))
+        print('Amount to trade : {} {}\n'.format(token0Amount, token0['symbol']))
         amounts.clear()
 
         i = 0
@@ -40,6 +41,7 @@ for token0 in tokenList:
                 t.join()
             i += THREADS
 
+        #pp.pprint(amounts)
         print('\n')
         if (len(amounts) < 2):
             print("Not enough amounts to search an arbitrage, go to the next pair...\n")
